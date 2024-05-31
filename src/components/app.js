@@ -1,35 +1,36 @@
-import ReviewList from "./reviewList";
-import { useEffect, useState } from "react";
-import { getReviews } from "../api";
+import { useState } from "react";
 
 function App() {
-  const [order, setOrder] = useState("createdAt");
-  const [items, setItems] = useState([]);
-  const sortedItems = items.sort((a, b) => b[order] - a[order]);
-
-  const handleNewestClick = () => setOrder("createdAt");
-  const handleBestClick = () => setOrder("rating");
-
-  const handleDelete = (id) => {
-    const nextItems = items.filter((item) => item.id !== id);
-    setItems(nextItems);
+  const [todo, setTodo] = useState("");
+  const [todoList, setTodoList] = useState([]);
+  const onChange = (e) => setTodo(e.target.value);
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if(todo === "") return
+    setTodoList(cur => [todo, ...cur])
+    setTodo("")
   };
-
-  const handleLoadClick = async () => {
-    const { reviews } = await getReviews();
-    setItems(reviews);
-  };
-
-  useEffect(() => handleLoadClick, []);
-
   return (
     <div>
-      <div>
-        <button onClick={handleNewestClick}>최신순</button>
-        <button onClick={handleBestClick}>베스트순</button>
-      </div>
-      <ReviewList items={sortedItems} onDelete={handleDelete} />
-      <button onClick={handleLoadClick}>불러오기</button>
+      <h1>TodoList</h1>
+      <h3>count : {(todoList.length)}</h3>
+      <form onSubmit={onSubmit}>
+        <input
+          value={todo}
+          onChange={onChange}
+          type="text"
+          placeholder="Write your todo..."
+        />
+        <button>Add todo</button>
+      </form>
+      <hr/>
+      <ul>
+        {todoList.map((e, idx) => {
+          return (
+            <li key={idx}>{(e)}</li>
+          )
+        })}
+      </ul>
     </div>
   );
 }
